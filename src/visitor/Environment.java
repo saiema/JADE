@@ -88,7 +88,7 @@ public class Environment {
 		String envToString = "";
 		for (Entry<Tree, EnvironmentEntry> entry : this.env.entrySet()) {
 			envToString += entry.getValue().toString() + "\n";
-			envToString += "type     : " + getType(entry.getKey()) + "\n";
+			envToString += "type     : " + getType(entry.getKey()) + "\n\n";
 		}
 		envToString += "\n";
 		if (this.child != null) {

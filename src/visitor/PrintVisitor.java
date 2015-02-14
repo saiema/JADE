@@ -1059,4 +1059,18 @@ public class PrintVisitor implements TreeVisitor<Void,Void> {
     	print("OTHER CHABON!", false);
         return defaultAction(node, Void);
     }
+
+	@Override
+	public Void visitUnionType(UnionTypeTree node, Void Void) {
+		List<? extends Tree> alternatives = node.getTypeAlternatives();
+		if (alternatives != null && !alternatives.isEmpty()) {
+			for (int a = 0; a < alternatives.size(); a++) {
+				alternatives.get(a).accept(this, Void);
+				if (a + 1 < alternatives.size()) {
+					print("|", false);
+				}
+			}
+		}
+		return defaultAction(node, Void);
+	}
 }

@@ -1,6 +1,7 @@
 package visitor;
 
 import java.util.List;
+
 import com.sun.source.tree.*;
 import com.sun.source.tree.Tree.Kind;
 import com.sun.source.util.Trees;
@@ -17,10 +18,15 @@ public class SignatureCollectorVisitor implements TreeVisitor<Void,Environment> 
 	protected int level = 0;
 	protected CompilationUnitTree compilationUnit;
 	protected Trees trees;
+	protected boolean visitingVariable = false;
 	
 	
 	public SignatureCollectorVisitor(Trees trees) {
 		this.trees = trees;
+	}
+	
+	protected void visitingVariable(boolean value) {
+		this.visitingVariable = value;
 	}
 	
 	
@@ -113,6 +119,7 @@ public class SignatureCollectorVisitor implements TreeVisitor<Void,Environment> 
 
     public Void visitVariable(VariableTree node, Environment env) {
     	env.addEntry(this.compilationUnit, node);
+    	env.addEntry(this.compilationUnit, node.getType());
     	if (node.getInitializer() != null) {
     		node.getInitializer().accept(this, env);
     	}
@@ -592,7 +599,10 @@ public class SignatureCollectorVisitor implements TreeVisitor<Void,Environment> 
     }
 
     public Void visitIdentifier(IdentifierTree node, Environment env) {
-        return defaultAction(node, env);
+        if (this.visitingVariable) {
+        	env.addEntry(this.compilationUnit, node);
+        }
+    	return defaultAction(node, env);
     }
 
     public Void visitLiteral(LiteralTree node, Environment env) {
@@ -705,4 +715,10 @@ public class SignatureCollectorVisitor implements TreeVisitor<Void,Environment> 
     public Void visitOther(Tree node, Environment env) {
         return defaultAction(node, env);
     }
+
+
+	@Override
+	public Void visitUnionType(UnionTypeTree node, Environment env) {
+		return defaultAction(node, env);
+	}
 }
